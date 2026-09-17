@@ -37,15 +37,18 @@ the IDs in `wolfe_island_gtfs_rt.py` to match yours).
 ## Output
 
 The generated feed is committed to this repo as
-[`gtfs-rt-alerts.pb`](./gtfs-rt-alerts.pb) on every run. With GitHub Pages
-enabled on this branch, it's servable at a stable URL like:
+[`gtfs-rt-alerts.pb`](./gtfs-rt-alerts.pb) on every run, and published via
+GitHub Pages at:
 
 ```
-https://<your-username>.github.io/wolfe-island-gtfs-rt/gtfs-rt-alerts.pb
+https://nizgoon.github.io/wolfe-island-gtfs-rt/gtfs-rt-alerts.pb
 ```
 
 Point any GTFS-RT consumer (OneBusAway, OpenTripPlanner, Transit apps, etc.)
-at that URL as a Service Alerts feed.
+at that URL as a Service Alerts feed. Since the poll workflow commits to
+`main` whenever the ferry's status changes, each of those commits
+automatically triggers a new Pages deployment -- the hosted feed stays in
+sync with no extra steps.
 
 ## Running it yourself
 
