@@ -5,10 +5,12 @@ Wolfe Island Ferry -> GTFS-RT Service Alerts
 Source of truth: Ontario 511 REST API (the same feed that drives the
 @MTOFerryWI status shown on the map / X account), NOT X/Twitter itself.
 
-  GET https://511on.ca/api/v2/get/ferryterminals?format=json
+  GET https://511on.ca/api/v2/get/ferryterminals?key={key}&format=json
 
-No API key required. Rate limit: 10 calls / 60s, so poll no more than
-once every ~10-15s (once a minute is plenty for a ferry).
+Requires a free developer key from https://511on.ca/developers/help,
+read from the ONTARIO_511_API_KEY environment variable.
+Rate limit: 10 calls / 60s, so poll no more than once every ~10-15s
+(once a minute is plenty for a ferry).
 
 This script polls that endpoint, finds the Wolfe Island (Kingston -
 Marysville) terminal record, and emits a GTFS-RT FeedMessage containing
@@ -23,11 +25,13 @@ can be pointed at.
 """
 
 import json
+import os
 import time
+import urllib.parse
 import urllib.request
 from google.transit import gtfs_realtime_pb2 as gtfs_rt
 
-SOURCE_URL = "https://511on.ca/api/v2/get/ferryterminals?format=json"
+SOURCE_URL = "https://511on.ca/api/v2/get/ferryterminals"
 
 # This must be the specific terminal record for the Kingston<->Marysville
 # route (511 lists a separate "Kingston - Dawson" record used only during
@@ -44,7 +48,11 @@ POLL_SECONDS = 60
 
 
 def fetch_terminal_status():
-    with urllib.request.urlopen(SOURCE_URL, timeout=15) as resp:
+    key = os.environ.get("ONTARIO_511_API_KEY")
+    if not key:
+        raise RuntimeError("ONTARIO_511_API_KEY environment variable is not set")
+    url = f"{SOURCE_URL}?{urllib.parse.urlencode({'key': key, 'format': 'json'})}"
+    with urllib.request.urlopen(url, timeout=15) as resp:
         data = json.loads(resp.read().decode("utf-8"))
     for terminal in data:
         if terminal.get("LocationDescription") == TARGET_LOCATION_DESCRIPTION:

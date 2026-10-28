@@ -25,6 +25,8 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Poll 511 Ontario and regenerate feed
+        env:
+          ONTARIO_511_API_KEY: ${{ secrets.ONTARIO_511_API_KEY }}
         run: python wolfe_island_gtfs_rt.py --once
 
       - name: Commit updated feed

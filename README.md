@@ -12,11 +12,15 @@ existing public data source into a standard transit format.
 
 Ontario 511 already publishes live ferry status (the same data behind the
 [@MTOFerryWI](https://twitter.com/MTOFerryWI) alerts and the 511 map) via a
-free, unauthenticated REST API:
+free REST API (a developer key is required -- register at
+[511on.ca/developers](https://511on.ca/developers/help)):
 
 ```
-GET https://511on.ca/api/v2/get/ferryterminals?format=json
+GET https://511on.ca/api/v2/get/ferryterminals?key={key}&format=json
 ```
+
+The workflow reads the key from the `ONTARIO_511_API_KEY` repository secret
+(Settings → Secrets and variables → Actions).
 
 This repo polls that endpoint every 5 minutes via GitHub Actions, and when
 the Wolfe Island (Kingston–Marysville) terminal is anything other than
@@ -54,6 +58,7 @@ sync with no extra steps.
 
 ```bash
 pip install -r requirements.txt
+export ONTARIO_511_API_KEY=your-key
 python wolfe_island_gtfs_rt.py --once      # single poll, writes gtfs-rt-alerts.pb
 python wolfe_island_gtfs_rt.py             # polls forever, once a minute
 ```
